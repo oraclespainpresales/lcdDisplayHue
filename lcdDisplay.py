@@ -305,6 +305,8 @@ def buttonPressed(event):
           currentInfoDisplay=currentInfoDisplay-1
     else:
       currentInfoDisplay=maxInfoDisplay
+      if currentInfoDisplay == HUESETUP and not HUEENABLED:
+          currentInfoDisplay=currentInfoDisplay-1
     displayInfoRotation(event.chip)
     buttonWaitingForConfirmation = -1
   elif event.pin_num == BUTTONRIGHT:
@@ -313,6 +315,8 @@ def buttonPressed(event):
       if currentInfoDisplay == HUESETUP and not HUEENABLED:
           currentInfoDisplay=currentInfoDisplay+1
     else:
+      currentInfoDisplay=0
+    if currentInfoDisplay > maxInfoDisplay:
       currentInfoDisplay=0
     displayInfoRotation(event.chip)
     buttonWaitingForConfirmation = -1
