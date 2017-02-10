@@ -12,17 +12,13 @@ import shutil
 pi_home="/home/pi"
 setup_home="/setup"
 
-EVENTSCHEDULED=False
 demozone=""
-proxyport=-1
-SETUP_demozone_file=pi_home+setup_home+"/demozone.TOSETUP"
-SETUP_redirects_file=pi_home+setup_home+"/redirects.TOSETUP"
 
 INIT=0
 WIFI=1
-HUESETUP=3
+HUESETUP=2
 currentInfoDisplay=0
-maxInfoDisplay=3
+maxInfoDisplay=2
 buttonWaitingForConfirmation=-1
 HUEENABLED=False
 
