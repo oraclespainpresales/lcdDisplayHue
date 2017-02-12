@@ -20,7 +20,6 @@ HUESETUP=2
 currentInfoDisplay=0
 maxInfoDisplay=2
 buttonWaitingForConfirmation=-1
-HUEENABLED=False
 
 BUTTON1=0
 BUTTON2=1
@@ -163,7 +162,6 @@ def handleButton(button, screen, event):
   if screen == INIT:
     # 1: REBOOT
     # 2: POWEROFF
-    # 3: RESET RPi
     # 5: CONFIRM
     if buttonWaitingForConfirmation != -1 and button == BUTTON5:
 	  # Confirmation to previous command
@@ -179,7 +177,7 @@ def handleButton(button, screen, event):
 	  cad.lcd.set_cursor(0, 0)
 	  cad.lcd.write(msg)
 	  run_cmd(CMD)
-    if button == BUTTON1 or button == BUTTON2 or button == BUTTON3:
+    if button == BUTTON1 or button == BUTTON2:
 	  buttonWaitingForConfirmation = button
 	  if button == BUTTON1:
 	     msg = "REBOOT REQUEST"
@@ -301,19 +299,13 @@ def buttonPressed(event):
   if event.pin_num == BUTTONLEFT:
     if currentInfoDisplay > 0:
       currentInfoDisplay=currentInfoDisplay-1
-      if currentInfoDisplay == HUESETUP and not HUEENABLED:
-          currentInfoDisplay=currentInfoDisplay-1
     else:
       currentInfoDisplay=maxInfoDisplay
-      if currentInfoDisplay == HUESETUP and not HUEENABLED:
-          currentInfoDisplay=currentInfoDisplay-1
     displayInfoRotation(event.chip)
     buttonWaitingForConfirmation = -1
   elif event.pin_num == BUTTONRIGHT:
     if currentInfoDisplay < maxInfoDisplay:
       currentInfoDisplay=currentInfoDisplay+1
-      if currentInfoDisplay == HUESETUP and not HUEENABLED:
-          currentInfoDisplay=currentInfoDisplay+1
     else:
       currentInfoDisplay=0
     if currentInfoDisplay > maxInfoDisplay:
@@ -411,12 +403,9 @@ cad.lcd.backlight_on()
 cad.lcd.blink_off()
 cad.lcd.cursor_off()
 
-HUEENABLED = os.path.isfile(hue_file)
-
-if HUEENABLED:
-    run_cmd(HUE_LOCALON_CMD)
-    time.sleep(2)
-    run_cmd(HUE_LOCALOFF_CMD)
+run_cmd(HUE_LOCALON_CMD)
+time.sleep(2)
+run_cmd(HUE_LOCALOFF_CMD)
 
 initDisplay(cad)
 listener = pifacecad.SwitchEventListener(chip=cad)
