@@ -157,9 +157,7 @@ def hueSetupDisplay(cad):
 def wsStatusDisplay(cad):
   cad.lcd.clear()
   cad.lcd.set_cursor(0, 0)
-  cad.lcd.write("WS CONNECTION:")
-  cad.lcd.set_cursor(0, 1)
-  cad.lcd.write(get_ws_status())
+  cad.lcd.write("WS CONNECTION:\n" + get_ws_status())
 
 def handleButton(button, screen, event):
   global buttonWaitingForConfirmation
