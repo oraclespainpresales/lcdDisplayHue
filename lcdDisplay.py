@@ -157,7 +157,7 @@ def hueSetupDisplay(cad):
 def wsStatusDisplay(cad):
   cad.lcd.clear()
   cad.lcd.set_cursor(0, 0)
-  cad.lcd.write("WS CONNECTION")
+  cad.lcd.write("WS CONNECTION:")
   cad.lcd.set_cursor(0, 1)
   response = get_ws_status()
   cad.lcd.write(response.split()[-1])
@@ -271,7 +271,7 @@ def handleButton(button, screen, event):
 	  if buttonWaitingForConfirmation == BUTTON1:
 	    # RESTART HUE
 	    cad.lcd.write("RESETING WS\nCLIENT")
-	    run_cmd(RESET_HUE_CMD)
+	    run_cmd(HARDRESET_WS_CMD)
 	  buttonWaitingForConfirmation = -1
 	  displayInfoRotation(event.chip)
     if button == BUTTON1:
