@@ -48,8 +48,6 @@ HUE_STATUS_CMD = "curl -i -X GET http://localhost:3378/hue/status 2>/dev/null"
 HUE_PING_CMD = "curl -i -X GET http://localhost:3378/hue/ping 2>/dev/null"
 RESET_HUE_CMD = "curl -i -X POST http://localhost:3378/hue/reset 2>/dev/null | grep HTTP | awk '{print $2}'"
 HARDRESET_HUE_CMD = "forever stop hue;forever start --uid hue --append /home/pi/node/huebridge/server.js -vh $HUEBRIDGE -t 5000"
-HUE_ON_CMD = "curl -i -X PUT http://$reverseProxy:{PORT}/hue/ALL/ON/GREEN >/dev/null 2>&1"
-HUE_OFF_CMD = "curl -i -X PUT http://$reverseProxy:{PORT}/hue/ALL/OFF >/dev/null 2>&1"
 HUE_LOCALON_CMD = "curl -i -X PUT http://localhost:3378/hue/ALL/ON/BLUE >/dev/null 2>&1"
 HUE_LOCALOFF_CMD = "curl -i -X PUT http://localhost:3378/hue/ALL/OFF >/dev/null 2>&1"
 piusergroup=1000
@@ -215,51 +213,26 @@ def handleButton(button, screen, event):
 	    displayInfoRotation(event.chip)
 	    buttonWaitingForConfirmation = -1
   elif screen == HUESETUP:
-    # 1: RESTART AUTOSSH PROCESS
-    # 2: RESTART HUE
-    # 3: RESTART NODEJS
-    # 4: TEST LIGHTS (ON and then OFF)
+    # 1: RESTART HUE
+    # 2: TEST LIGHTS (ON and then OFF)
     # 5: CONFIRM for #1 and #2
     if buttonWaitingForConfirmation != -1 and button == BUTTON5:
 	  # Confirmation to previous command
 	  cad.lcd.clear()
 	  cad.lcd.set_cursor(0, 0)
 	  if buttonWaitingForConfirmation == BUTTON1:
-	    # RESTART AUTOSSH PROCESS
-	    cad.lcd.write("RESTARTING SSH\nTUNNELING")
-	    subport = str(proxyport)[-2:]
-	    _KILL_REVERSEPROXY_CMD = KILL_REVERSEPROXY_CMD.replace("{PORT}", subport)
-	    print _KILL_REVERSEPROXY_CMD
-	    run_cmd(RESET_AUTOSSH_CMD)
-	    run_cmd(_KILL_REVERSEPROXY_CMD)
-	  elif buttonWaitingForConfirmation == BUTTON2:
 	    # RESTART HUE
 	    cad.lcd.write("RESETING HUE\nCONNECTION")
 	    run_cmd(RESET_HUE_CMD)
-	  elif buttonWaitingForConfirmation == BUTTON3:
-	    # RESTART NODEJS
-	    cad.lcd.write("RESTARTING\nNODEJS")
-	    run_cmd(HARDRESET_HUE_CMD)
-	    time.sleep(10)
 	  else:
 	    # TEST LIGHTS
 	    cad.lcd.write("TESTING LIGHTS\nON & OFF")
-	    port = "33" + str(proxyport)[-2:]
-	    _HUE_ON_CMD = HUE_ON_CMD.replace("{PORT}", port)
-	    _HUE_OFF_CMD = HUE_OFF_CMD.replace("{PORT}", port)
-	    run_cmd(_HUE_ON_CMD)
-	    run_cmd(_HUE_OFF_CMD)
+	    run_cmd(HUE_LOCALON_CMD)
+	    time.sleep(1)
+	    run_cmd(HUE_LOCALOFF_CMD)
 	  buttonWaitingForConfirmation = -1
 	  displayInfoRotation(event.chip)
     if button == BUTTON1:
-	  buttonWaitingForConfirmation = button
-	  msg = "AUTOSSH RST REQ"
-	  cad.lcd.clear()
-	  cad.lcd.set_cursor(0, 0)
-	  cad.lcd.write(msg)
-	  cad.lcd.set_cursor(0, 1)
-	  cad.lcd.write("CONFIRM RIGHTBTN")
-    elif button == BUTTON2:
 	  buttonWaitingForConfirmation = button
 	  msg = "HUE RESET REQ"
 	  cad.lcd.clear()
@@ -267,15 +240,7 @@ def handleButton(button, screen, event):
 	  cad.lcd.write(msg)
 	  cad.lcd.set_cursor(0, 1)
 	  cad.lcd.write("CONFIRM RIGHTBTN")
-    elif button == BUTTON3:
-	  buttonWaitingForConfirmation = button
-	  msg = "NODEJS RESET REQ"
-	  cad.lcd.clear()
-	  cad.lcd.set_cursor(0, 0)
-	  cad.lcd.write(msg)
-	  cad.lcd.set_cursor(0, 1)
-	  cad.lcd.write("CONFIRM RIGHTBTN")
-    elif button == BUTTON4:
+    elif button == BUTTON2:
 	  buttonWaitingForConfirmation = button
 	  msg = "HUE LIGHTS TEST"
 	  cad.lcd.clear()
@@ -381,7 +346,7 @@ cad.lcd.blink_off()
 cad.lcd.cursor_off()
 
 run_cmd(HUE_LOCALON_CMD)
-time.sleep(2)
+time.sleep(1)
 run_cmd(HUE_LOCALOFF_CMD)
 
 initDisplay(cad)
