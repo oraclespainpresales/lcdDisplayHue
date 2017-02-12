@@ -96,7 +96,7 @@ def displayInfoRotation(cad):
   elif currentInfoDisplay == WIFI:
     wifiDisplay(cad)
   elif currentInfoDisplay == HUESETUP:
-    hueSetupDisplay(cad)wsStatusDisplay
+    hueSetupDisplay(cad)
   elif currentInfoDisplay == WSSETUP:
     wsStatusDisplay(cad)
   else:
