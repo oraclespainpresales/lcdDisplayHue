@@ -338,7 +338,10 @@ def get_hue_status():
   return run_cmd(HUE_PING_CMD)
 
 def get_ws_status():
-  return run_cmd(WS_STATUS_CMD)
+  try:
+      return run_cmd(WS_STATUS_CMD)
+  except:
+      return "ERROR"
 
 def check_internet():
   return run_cmd(CHECK_INTERNET_CMD)
