@@ -345,10 +345,6 @@ cad.lcd.backlight_on()
 cad.lcd.blink_off()
 cad.lcd.cursor_off()
 
-run_cmd(HUE_LOCALON_CMD)
-time.sleep(1)
-run_cmd(HUE_LOCALOFF_CMD)
-
 initDisplay(cad)
 listener = pifacecad.SwitchEventListener(chip=cad)
 for i in range(8):
