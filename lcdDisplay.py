@@ -332,7 +332,7 @@ def get_my_wifi():
   return wifi
 
 def get_my_ip():
-  return run_cmd(GET_IP_CMD)[:-1]
+  return run_cmd(GET_IP_CMD).split(" ")[0]
 
 def get_hue_status():
   return run_cmd(HUE_PING_CMD)
