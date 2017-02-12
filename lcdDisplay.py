@@ -44,7 +44,6 @@ CHECK_INTERNET_CMD = "sudo ping -q -w 1 -c 1 8.8.8.8 > /dev/null 2>&1 && echo U 
 REBOOT_CMD = "sudo reboot"
 POWEROFF_CMD = "sudo poweroff"
 # HUE stuff
-CHECK_REVERSEPROXY_HUE_CMD = "ssh -i /home/pi/.ssh/anki_drone $reverseProxy \"netstat -ant | grep LISTEN | grep {HUEPORT} | wc -l\""
 HUE_STATUS_CMD = "curl -i -X GET http://localhost:3378/hue/status 2>/dev/null"
 HUE_PING_CMD = "curl -i -X GET http://localhost:3378/hue/ping 2>/dev/null"
 RESET_HUE_CMD = "curl -i -X POST http://localhost:3378/hue/reset 2>/dev/null | grep HTTP | awk '{print $2}'"
@@ -144,8 +143,7 @@ def hueSetupDisplay(cad):
       st = "ON"
   else:
       st = "OFF"
-  proxystatus = check_reverse_proxy_hue()
-  line1 = "SSH:%s HUE:%s" % (proxystatus, st)
+  line1 = "HUE:%s" % st
   line2 = "ON:%d OFF:%d RCH:%d" % (on,off,reachable)
   cad.lcd.clear()
   cad.lcd.set_cursor(0, 0)
@@ -342,27 +340,6 @@ def get_hue_status():
 
 def check_internet():
   return run_cmd(CHECK_INTERNET_CMD)
-
-def check_reverse_proxy_hue():
-  global proxyport
-  URI = CHECK_REVERSEPROXY_HUE_CMD
-  port = "33" + str(proxyport)[-2:]
-  URI = URI.replace("{HUEPORT}", port)
-  listeners=int(run_cmd(URI))
-  if listeners > 0:
-     return "OK"
-  else:
-     return "NOK"
-
-def check_reverse_proxy():
-  global proxyport
-  URI = CHECK_REVERSEPROXY_CMD
-  URI = URI.replace("{DRONEPORT}", proxyport)
-  listeners=int(run_cmd(URI))
-  if listeners > 0:
-     return "OK"
-  else:
-     return "NOK"
 
 def getPiName():
   with open(demozone_file, 'r') as f:
