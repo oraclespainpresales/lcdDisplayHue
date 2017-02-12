@@ -17,8 +17,9 @@ demozone=""
 INIT=0
 WIFI=1
 HUESETUP=2
+WSSETUP=3
 currentInfoDisplay=0
-maxInfoDisplay=2
+maxInfoDisplay=3
 buttonWaitingForConfirmation=-1
 
 BUTTON1=0
@@ -43,11 +44,13 @@ RESET_WIFI_CMD = "sudo ifdown wlan0;sleep 5;sudo ifup wlan0"
 CHECK_INTERNET_CMD = "sudo ping -q -w 1 -c 1 8.8.8.8 > /dev/null 2>&1 && echo U || echo D"
 REBOOT_CMD = "sudo reboot"
 POWEROFF_CMD = "sudo poweroff"
+WS_STATUS_CMD = "curl -i -X GET http://localhost:3379/status 2>/dev/null"
+HARDRESET_WS_CMD = "forever stop hueeventclient;forever start -a --uid hueeventclient /home/pi/node/hueeventclient/server.js -s `cat /home/pi/setup/eventserver.dat` -d `cat /home/pi/setup/demozone.dat`"
 # HUE stuff
 HUE_STATUS_CMD = "curl -i -X GET http://localhost:3378/hue/status 2>/dev/null"
 HUE_PING_CMD = "curl -i -X GET http://localhost:3378/hue/ping 2>/dev/null"
 RESET_HUE_CMD = "curl -i -X POST http://localhost:3378/hue/reset 2>/dev/null | grep HTTP | awk '{print $2}'"
-HARDRESET_HUE_CMD = "forever stop hue;forever start --uid hue --append /home/pi/node/huebridge/server.js -vh $HUEBRIDGE -t 5000"
+HARDRESET_HUE_CMD = "forever stop hue;forever start --uid hue --append /home/pi/node/huebridge/server.js -h `cat /home/pi/setup/huebridge.dat` -t 1000"
 HUE_LOCALON_CMD = "curl -i -X PUT http://localhost:3378/hue/ALL/ON/BLUE >/dev/null 2>&1"
 HUE_LOCALOFF_CMD = "curl -i -X PUT http://localhost:3378/hue/ALL/OFF >/dev/null 2>&1"
 piusergroup=1000
@@ -149,6 +152,14 @@ def hueSetupDisplay(cad):
   cad.lcd.set_cursor(0, 1)
   cad.lcd.write(line2)
 
+def wsStatusDisplay(cad):
+  response = get_ws_status()
+  cad.lcd.clear()
+  cad.lcd.set_cursor(0, 0)
+  cad.lcd.write("WS CONNECTION:")
+  cad.lcd.set_cursor(0, 1)
+  cad.lcd.write(response)
+
 def handleButton(button, screen, event):
   global buttonWaitingForConfirmation
   global dbcs
@@ -248,6 +259,27 @@ def handleButton(button, screen, event):
 	  cad.lcd.write(msg)
 	  cad.lcd.set_cursor(0, 1)
 	  cad.lcd.write("CONFIRM RIGHTBTN")
+  elif screen == WSSETUP:
+    # 1: RESTART WS process
+    # 5: CONFIRM for #1
+    if buttonWaitingForConfirmation != -1 and button == BUTTON5:
+	  # Confirmation to previous command
+	  cad.lcd.clear()
+	  cad.lcd.set_cursor(0, 0)
+	  if buttonWaitingForConfirmation == BUTTON1:
+	    # RESTART HUE
+	    cad.lcd.write("RESETING WS\nCLIENT")
+	    run_cmd(RESET_HUE_CMD)
+	  buttonWaitingForConfirmation = -1
+	  displayInfoRotation(event.chip)
+    if button == BUTTON1:
+	  buttonWaitingForConfirmation = button
+	  msg = "WS RESET REQ"
+	  cad.lcd.clear()
+	  cad.lcd.set_cursor(0, 0)
+	  cad.lcd.write(msg)
+	  cad.lcd.set_cursor(0, 1)
+	  cad.lcd.write("CONFIRM RIGHTBTN")
     else:
 	  if buttonWaitingForConfirmation != -1:
 	    displayInfoRotation(event.chip)
@@ -302,6 +334,9 @@ def get_my_ip():
 
 def get_hue_status():
   return run_cmd(HUE_PING_CMD)
+
+def get_ws_status():
+  return run_cmd(WS_STATUS_CMD)
 
 def check_internet():
   return run_cmd(CHECK_INTERNET_CMD)
