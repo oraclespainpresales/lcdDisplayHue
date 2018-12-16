@@ -389,7 +389,7 @@ cad.lcd.backlight_on()
 cad.lcd.blink_off()
 cad.lcd.cursor_off()
 
-initDisplay(cad)
+initDisplay()
 
 FLAGS     = [0,0,0,0,0,0,0,0]
 PREVFLAGS = [0,0,0,0,0,0,0,0]
