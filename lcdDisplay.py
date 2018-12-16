@@ -205,7 +205,7 @@ def handleButton(button, screen):
 	  cad.lcd.write("CONFIRM RIGHTBTN")
     else:
 	  if buttonWaitingForConfirmation != -1:
-	    displayInfoRotation(event.chip)
+	    displayInfoRotation()
 	    buttonWaitingForConfirmation = -1
   elif screen == WIFI:
     # 1: RESET WIFI
@@ -218,7 +218,7 @@ def handleButton(button, screen):
 	  cad.lcd.set_cursor(0, 0)
 	  cad.lcd.write(msg)
 	  run_cmd(RESET_WIFI_CMD)
-	  displayInfoRotation(event.chip)
+	  displayInfoRotation()
     if button == BUTTON1:
 	  buttonWaitingForConfirmation = button
 	  msg = "WIFI RST REQUEST"
@@ -229,7 +229,7 @@ def handleButton(button, screen):
 	  cad.lcd.write("CONFIRM RIGHTBTN")
     else:
 	  if buttonWaitingForConfirmation != -1:
-	    displayInfoRotation(event.chip)
+	    displayInfoRotation()
 	    buttonWaitingForConfirmation = -1
   elif screen == HUESETUP:
     # 1: RESTART HUE
@@ -250,7 +250,7 @@ def handleButton(button, screen):
 	    time.sleep(1)
 	    run_cmd(HUE_LOCALOFF_CMD)
 	  buttonWaitingForConfirmation = -1
-	  displayInfoRotation(event.chip)
+	  displayInfoRotation()
     if button == BUTTON1:
 	  buttonWaitingForConfirmation = button
 	  msg = "HUE RESET REQ"
@@ -279,7 +279,7 @@ def handleButton(button, screen):
 	    cad.lcd.write("RESETING WS\nCLIENT")
 	    run_cmd(HARDRESET_WS_CMD)
 	  buttonWaitingForConfirmation = -1
-	  displayInfoRotation(event.chip)
+	  displayInfoRotation()
     if button == BUTTON1:
 	  buttonWaitingForConfirmation = button
 	  msg = "WS RESET REQ"
@@ -290,7 +290,7 @@ def handleButton(button, screen):
 	  cad.lcd.write("CONFIRM RIGHTBTN")
     else:
 	  if buttonWaitingForConfirmation != -1:
-	    displayInfoRotation(event.chip)
+	    displayInfoRotation()
 	    buttonWaitingForConfirmation = -1
   else:
     print "UNKNOWN SCREEN: %s" % screen
