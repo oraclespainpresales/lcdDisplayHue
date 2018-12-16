@@ -89,27 +89,31 @@ def get_dbcs():
   dbcs = read_file(dbcs_host_file)
   return(dbcs.rstrip())
 
-def displayInfoRotation(cad):
+def displayInfoRotation():
   global currentInfoDisplay
+  global cad
+
   if currentInfoDisplay == INIT:
-    initDisplay(cad)
+    initDisplay()
   elif currentInfoDisplay == WIFI:
-    wifiDisplay(cad)
+    wifiDisplay()
   elif currentInfoDisplay == HUESETUP:
-    hueSetupDisplay(cad)
+    hueSetupDisplay()
   elif currentInfoDisplay == WSSETUP:
-    wsStatusDisplay(cad)
+    wsStatusDisplay()
   else:
     print "No more pages"
 
-def initDisplay(cad):
+def initDisplay():
+    global cad
     cad.lcd.clear()
     cad.lcd.set_cursor(0, 0)
     cad.lcd.write("Pi Version:"+getPiVersion())
     cad.lcd.set_cursor(0, 1)
     cad.lcd.write(getPiName())
 
-def wifiDisplay(cad):
+def wifiDisplay():
+  global cad
   cad.lcd.clear()
   cad.lcd.set_cursor(0, 0)
   cad.lcd.write("Wifi:"+get_my_wifi())
@@ -118,7 +122,8 @@ def wifiDisplay(cad):
   cad.lcd.set_cursor(15, 1)
   cad.lcd.write(check_internet())
 
-def hueSetupDisplay(cad):
+def hueSetupDisplay():
+  global cad
   cad.lcd.clear()
   cad.lcd.set_cursor(0, 0)
   cad.lcd.write("GETTING HUE DATA")
@@ -154,7 +159,8 @@ def hueSetupDisplay(cad):
   cad.lcd.set_cursor(0, 1)
   cad.lcd.write(line2)
 
-def wsStatusDisplay(cad):
+def wsStatusDisplay():
+  global cad
   cad.lcd.clear()
   cad.lcd.set_cursor(0, 0)
   cad.lcd.write("WS CONNECTION:")
