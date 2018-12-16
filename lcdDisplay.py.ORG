@@ -162,7 +162,7 @@ def wsStatusDisplay(cad):
   response = get_ws_status()
   cad.lcd.write(response.split()[-1])
 
-def handleButton(button, screen):
+def handleButton(button, screen, event):
   global buttonWaitingForConfirmation
   global dbcs
   global demozone
@@ -289,32 +289,34 @@ def handleButton(button, screen):
   else:
     print "UNKNOWN SCREEN: %s" % screen
 
-def buttonPressed(buttonId):
+def buttonPressed(event):
 #  print "Event: "+str(event.pin_num)
   global currentInfoDisplay
 
-  if buttonId == BUTTONLEFT:
+  if event.pin_num == BUTTONLEFT:
     if currentInfoDisplay > 0:
       currentInfoDisplay=currentInfoDisplay-1
     else:
       currentInfoDisplay=maxInfoDisplay
-    displayInfoRotation()
+    displayInfoRotation(event.chip)
     buttonWaitingForConfirmation = -1
-  elif buttonId == BUTTONRIGHT:
+  elif event.pin_num == BUTTONRIGHT:
     if currentInfoDisplay < maxInfoDisplay:
       currentInfoDisplay=currentInfoDisplay+1
     else:
       currentInfoDisplay=0
-    displayInfoRotation()
+    if currentInfoDisplay > maxInfoDisplay:
+      currentInfoDisplay=0
+    displayInfoRotation(event.chip)
     buttonWaitingForConfirmation = -1
-  elif buttonId == BUTTONMIDDLE:
-    displayInfoRotation()
+  elif event.pin_num == BUTTONMIDDLE:
+    displayInfoRotation(event.chip)
     buttonWaitingForConfirmation = -1
-  elif buttonId >= BUTTON1 and buttonId <= BUTTON5:
-    handleButton(buttonId,currentInfoDisplay)
+  elif event.pin_num >= BUTTON1 and event.pin_num <= BUTTON5:
+    handleButton(event.pin_num,currentInfoDisplay, event)
   else:
-    cad.lcd.set_cursor(0, 14)
-#    cad.lcd.write(str(event.pin_num))
+    event.chip.lcd.set_cursor(0, 14)
+    event.chip.lcd.write(str(event.pin_num))
 
 def run_cmd(cmd):
   msg = subprocess.check_output(cmd, shell=True).decode('utf-8')
@@ -384,24 +386,7 @@ cad.lcd.blink_off()
 cad.lcd.cursor_off()
 
 initDisplay(cad)
-
-FLAGS     = [0,0,0,0,0,0,0,0]
-PREVFLAGS = [0,0,0,0,0,0,0,0]
-
-while True:
-    time.sleep(0.1)
-    for i,e in enumerate(FLAGS):
-        FLAGS[i] = cad.switches[i].value
-    #print FLAGS
-    for i,e in enumerate(FLAGS):
-        if PREVFLAGS[i] == 1 and FLAGS[i] == 0:
-            PREVFLAGS[i] = 0
-            #print "PRESSED & UNPRESSED BUTTON #" + str(i)
-            buttonPressed(i)
-        else:
-            PREVFLAGS[i] = FLAGS[i]
-
-#listener = pifacecad.SwitchEventListener(chip=cad)
-#for i in range(8):
-#  listener.register(i, pifacecad.IODIR_FALLING_EDGE, buttonPressed)
-#listener.activate()
+listener = pifacecad.SwitchEventListener(chip=cad)
+for i in range(8):
+  listener.register(i, pifacecad.IODIR_FALLING_EDGE, buttonPressed)
+listener.activate()
